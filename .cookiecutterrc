@@ -1,0 +1,64 @@
+# This file exists so you can easily regenerate your project.
+#
+# `cookiepatcher` is a convenient shim around `cookiecutter`
+# for regenerating projects (it will generate a .cookiecutterrc
+# automatically for any template). To use it:
+#
+#    pip install cookiepatcher
+#    cookiepatcher gh:ionelmc/cookiecutter-pylibrary project-path
+#
+# See:
+#    https://pypi.org/project/cookiepatcher
+#
+# Alternatively, you can run:
+#
+#    cookiecutter --overwrite-if-exists --config-file=project-path/.cookiecutterrc gh:ionelmc/cookiecutter-pylibrary
+
+default_context:
+
+    _extensions:               ['jinja2_time.TimeExtension']
+    _template:                 'gh:ionelmc/cookiecutter-pylibrary'
+    appveyor:                  'no'
+    c_extension_function:      'longest'
+    c_extension_module:        '_parma'
+    c_extension_optional:      'no'
+    c_extension_support:       'no'
+    c_extension_test_pypi:     'no'
+    c_extension_test_pypi_appveyor_secret: '[Get encrypted password from https://ci.appveyor.com/account/dougmvieira/tools/encrypt]'
+    c_extension_test_pypi_travis_secret: '# The password should be set in https://travis-ci.org/dougmvieira/parma/settings\n    # Alternatively you can run this shell oneliner if you got travis gem installed:\n    #\n    #   echo -n "Password:"; (read -s p; echo -n TWINE_PASSWORD=$p) | travis encrypt --add=env.global --repo=dougmvieira/parma'
+    c_extension_test_pypi_username: 'dougmvieira'
+    codacy:                    'no'
+    codacy_projectid:          '[Get ID from https://app.codacy.com/app/dougmvieira/parma/settings]'
+    codeclimate:               'no'
+    codecov:                   'yes'
+    command_line_interface:    'no'
+    command_line_interface_bin_name: 'parma'
+    coveralls:                 'no'
+    coveralls_token:           '[Required for Appveyor, take it from https://coveralls.io/github/dougmvieira/parma]'
+    distribution_name:         'parma'
+    email:                     'dougmvieira@gmail.com'
+    full_name:                 'Douglas Machado Vieira'
+    landscape:                 'no'
+    license:                   'MIT license'
+    linter:                    'flake8'
+    package_name:              'parma'
+    project_name:              'parma'
+    project_short_description: 'Multivariate polyharmonic spline interpolation'
+    release_date:              'today'
+    repo_hosting:              'github'
+    repo_name:                 'parma'
+    repo_username:             'dougmvieira'
+    requiresio:                'no'
+    scrutinizer:               'no'
+    sphinx_docs:               'yes'
+    sphinx_doctest:            'yes'
+    sphinx_theme:              'sphinx-rtd-theme'
+    test_matrix_configurator:  'no'
+    test_matrix_separate_coverage: 'no'
+    test_runner:               'pytest'
+    test_runner_setup_requires: 'no'
+    travis:                    'yes'
+    version:                   '0.0.0'
+    website:                   'https://github.com/dougmvieira/'
+    year_from:                 '2019'
+    year_to:                   '2019'
