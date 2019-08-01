@@ -6,11 +6,7 @@ from __future__ import unicode_literals
 
 import os
 import sys
-from os.path import abspath
-from os.path import dirname
-from os.path import exists
-from os.path import join
-from os.path import normpath
+from os.path import abspath, dirname, exists, join, normpath
 
 try:
     from os.path import samefile
