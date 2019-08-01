@@ -9,9 +9,6 @@ matrix:
     - python: '3.7'
       env:
         - TOXENV=check
-    - python: '3.7'
-      env:
-        - TOXENV=docs
     - env:
         - TOXENV=py27,codecov
       python: '2.7'
