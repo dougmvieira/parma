@@ -4,6 +4,25 @@ import numpy as np
 from scipy.special import xlogy
 
 
+def multiquadric_kernel(x, bandwidth):
+    return np.sqrt(1 + bandwidth**2*np.sum(x**2, axis=0))
+
+
+def multiquadric_kernel_diff(x, axis, bandwidth):
+    return bandwidth**2*x[axis]/multiquadric_kernel(x, bandwidth)
+
+
+def multiquadric_kernel_2nd_diff(x, axis, bandwidth):
+    r2 = np.sum(x**2, axis=0)
+    bw2 = bandwidth**2
+    return bw2*(1 + bw2*r2 - bw2*x[axis])/(1 + bw2*r2)**(3/2)
+
+
+def multiquadric_kernel_cross_diff(x, axis1, axis2, bandwidth):
+    r2 = np.sum(x**2, axis=0)
+    return bandwidth**4*x[axis1]*x[axis2]/(1 + bandwidth**2*r2)**(3/2)
+
+
 def kernel(x, degree):
     n = degree
     r = np.linalg.norm(x, axis=0)
@@ -157,5 +176,92 @@ def polyharmonic_hermite_interpolator(locs, vals, hermite_axes, hermite_vals,
 
         return (kernel_diff_vals + kernel_2nd_diff_vals
                 + sum(kernel_cross_diff_vals) + poly_vals)
+
+    return interpolator, interpolator_diff
+
+
+def multiquadric_hermite_linear_system(locs, vals, hermite_axes, hermite_vals,
+                                       bandwidth):
+    locs = np.array(locs)
+    n_data, n_haxes = len(vals), len(hermite_axes)
+
+    kernel_locs = locs[:, :, None] - locs[:, None, :]
+    kernel_vals = multiquadric_kernel(kernel_locs, bandwidth)
+    kernel_diff_vals = [multiquadric_kernel_diff(kernel_locs, axis, bandwidth)
+                        for axis in hermite_axes]
+
+    kernel_2nd_diff_vals = np.zeros((n_haxes, n_haxes, n_data, n_data))
+    for i in hermite_axes:
+        kernel_2nd_diff_vals[i, i, ...] = multiquadric_kernel_2nd_diff(kernel_locs, i,
+                                                                       bandwidth)
+        for j in range(i):
+            cross_diffs = multiquadric_kernel_cross_diff(kernel_locs, i, j, bandwidth)
+            kernel_2nd_diff_vals[i, j, ...] = cross_diffs
+            kernel_2nd_diff_vals[j, i, ...] = cross_diffs
+
+    A_kernel = [kernel_vals, *kernel_diff_vals]
+    A_kernel_diff = [[kernel_diff_vals[ax_i], *kernel_2nd_diff_vals[ax_i]]
+                     for ax_i in hermite_axes]
+    A = np.block([A_kernel, *A_kernel_diff])
+    b = np.concatenate([vals, *hermite_vals])
+
+    return A, b
+
+
+def multiquadric_hermite_cross_validation_loss(locs, vals, hermite_axes, hermite_vals,
+                                               bandwidth):
+    A, b = multiquadric_hermite_linear_system(locs, vals, hermite_axes, hermite_vals,
+                                              bandwidth)
+    Ainv = np.linalg.inv(A)
+    c = Ainv.dot(b)
+    return np.sum((c/np.diag(Ainv))**2)
+
+
+def multiquadric_hermite_interpolator(locs, vals, hermite_axes, hermite_vals,
+                                      bandwidth=None):
+    locs = np.array(locs)
+    n_dims, n_data, n_haxes = len(locs), len(vals), len(hermite_axes)
+
+    if bandwidth is None:
+        bws = np.exp(np.linspace(np.log(1e-2), np.log(1e3), 500))
+        losses = [multiquadric_hermite_cross_validation_loss(
+            locs, vals, hermite_axes, hermite_vals, bw) for bw in bws]
+        bandwidth = bws[np.argmin(losses)]
+
+    A, b = multiquadric_hermite_linear_system(locs, vals, hermite_axes,
+                                              hermite_vals, bandwidth)
+    c = np.linalg.solve(A, b)
+    c_kernel = c[:n_data]
+    c_diff_kernel = np.split(c[n_data:], n_haxes)
+
+    def interpolator(x):
+        x = np.array(x)
+        kernel_xs = tuple(x[i, ..., None] - locs[i, None, :]
+                          for i in range(n_dims))
+
+        kernel_vals = multiquadric_kernel(np.array(kernel_xs),
+                                          bandwidth).dot(c_kernel)
+        kernel_diff_vals = [multiquadric_kernel_diff(
+            np.array(kernel_xs), axis, bandwidth).dot(c_diff_kernel[axis])
+            for axis in hermite_axes]
+
+        return kernel_vals + sum(kernel_diff_vals)
+
+    def interpolator_diff(x, axis):
+        x = np.array(x)
+        kernel_xs = tuple(x[i, ..., None] - locs[i, None, :]
+                          for i in range(n_dims))
+
+        kernel_diff_vals = multiquadric_kernel_diff(np.array(kernel_xs), axis,
+                                                    bandwidth).dot(c_kernel)
+        kernel_2nd_diff_vals = multiquadric_kernel_2nd_diff(
+            np.array(kernel_xs), axis, bandwidth).dot(c_diff_kernel[axis])
+        kernel_cross_diff_vals = [
+            multiquadric_kernel_cross_diff(np.array(kernel_xs), axis, axis_j,
+                                           bandwidth).dot(c_diff_kernel[axis_j])
+            for axis_j in hermite_axes if axis != axis_j]
+
+        return (kernel_diff_vals + kernel_2nd_diff_vals
+                + sum(kernel_cross_diff_vals))
 
     return interpolator, interpolator_diff
