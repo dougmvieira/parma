@@ -142,8 +142,8 @@ def test_interp_multiquadric_hermite_2D():
     x_b, y_b = np.broadcast_arrays(x[None, :], y[:, None])
 
     assert np.max(np.abs(data_vals - interpolator(data_locs))) < 1e-3
-    assert np.max(np.abs(data_dx - interpolator_diff(data_locs, 0))) < 1e-5
-    assert np.max(np.abs(data_dy - interpolator_diff(data_locs, 1))) < 1e-5
+    assert np.max(np.abs(data_dx - interpolator_diff(data_locs, 0))) < 1e-4
+    assert np.max(np.abs(data_dy - interpolator_diff(data_locs, 1))) < 1e-4
     assert np.max(np.abs(f(x_b, y_b) - interpolator((x_b, y_b)))) < 1e-2
     assert np.max(np.abs(df_dx(x_b, y_b) - interpolator_diff((x_b, y_b), 0))
                   ) < 1e-2
