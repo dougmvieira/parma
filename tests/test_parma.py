@@ -1,7 +1,10 @@
+from itertools import repeat, product
+
 import numpy as np
 
 from parma import (polyharmonic_interpolator, polyharmonic_hermite_interpolator,
                    multiquadric_hermite_interpolator)
+from parma.utils import polynomial_powers
 
 
 def test_interp_1D():
@@ -149,6 +152,16 @@ def test_interp_multiquadric_hermite_2D():
                   ) < 1e-2
     assert np.max(np.abs(df_dy(x_b, y_b) - interpolator_diff((x_b, y_b), 1))
                   ) < 1e-2
+
+
+def test_polynomial_powers():
+    degree = 5
+    n_dims = 3
+
+    powers_list = [t for t in product(*repeat(range(degree + 1), n_dims))
+                   if sum(t) <= degree]
+
+    assert powers_list == polynomial_powers(degree, n_dims)
 
 
 if __name__ == '__main__':

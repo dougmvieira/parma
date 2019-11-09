@@ -1,7 +1,7 @@
-from itertools import product, repeat
-
 import numpy as np
 from scipy.special import xlogy
+
+from .utils import polynomial_powers
 
 
 def multiquadric_kernel(x, bandwidth):
@@ -66,8 +66,7 @@ def monomials(xs, powers_list):
 
 def polyharmonic_interpolator(locs, vals, degree):
     locs = np.array(locs)
-    powers_list = [t for t in product(*repeat(range(degree + 1), len(locs)))
-                   if sum(t) <= degree]
+    powers_list = polynomial_powers(degree, len(locs))
 
     kernel_vals = kernel(locs[:, :, None] - locs[:, None, :], degree)
     monomial_vals = monomials(locs, powers_list)
@@ -109,9 +108,7 @@ def polyharmonic_hermite_interpolator(locs, vals, hermite_axes, hermite_vals,
                                       degree):
     locs = np.array(locs)
     n_dims, n_data, n_haxes = len(locs), len(vals), len(hermite_axes)
-    powers_list = np.array([t for t in product(*repeat(range(degree + 1),
-                                                       n_dims))
-                            if sum(t) <= degree])
+    powers_list = np.array(polynomial_powers(degree, n_dims))
     n_poly = len(powers_list)
 
     kernel_locs = locs[:, :, None] - locs[:, None, :]
