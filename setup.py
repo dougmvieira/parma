@@ -20,7 +20,7 @@ def read(*names, **kwargs):
 
 setup(
     name='parma',
-    version='0.1.1',
+    version='0.1.2',
     license='MIT license',
     description='Multivariate polyharmonic spline interpolation',
     long_description='%s\n%s' % (
