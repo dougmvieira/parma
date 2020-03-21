@@ -145,6 +145,36 @@ def orthonormalise_data(cov_mat, compression=0.999999):
     True
     >>> np.allclose(u @ right_inverse(orth_mat).T + mean_vec, x)
     True
+
+    Use in interpolation
+    >>> from scipy.stats import norm
+    >>> from parma import multiquadric_hermite_interpolator
+    >>> def f(x, y):
+    ...     return np.exp(x/2) + np.exp(y/2)
+    >>> def df_dx(x, y):
+    ...     return np.exp(x/2)/2
+    >>> def df_dy(x, y):
+    ...     return np.exp(y/2)/2
+    >>> sigma = np.array([[2.0, 0.0], [0.0, 0.5]])
+    >>> x = np.linalg.cholesky(sigma) @ np.random.randn(2, 500)
+    >>> data_locs = norm.ppf(1/10 + np.mgrid[:5, :5].reshape((2, 25))/5)
+    >>> data_vals = f(*data_locs)
+    >>> data_dx = df_dx(*data_locs)
+    >>> data_dy = df_dy(*data_locs)
+    >>> interpolator, _ = multiquadric_hermite_interpolator(
+    ...     data_locs, data_vals, (0, 1), (data_dx, data_dy), 1)
+    >>> np.round(np.max(np.abs(f(*x) - interpolator(x))), 1)
+    2.0
+
+    >>> orth_mat = orthonormalise_data(np.cov(x))
+    >>> data_locs_inv = right_inverse(orth_mat) @ data_locs
+    >>> data_vals = f(*data_locs_inv)
+    >>> data_dx, data_dy = right_inverse(orth_mat) @ np.array(
+    ...     [df_dx(*data_locs_inv), df_dy(*data_locs_inv)])
+    >>> interpolator, _ = multiquadric_hermite_interpolator(
+    ...     data_locs, data_vals, (0, 1), (data_dx, data_dy), 1)
+    >>> np.round(np.max(np.abs(f(*x) - interpolator(orth_mat @ x))), 1)
+    1.5
     """
     eigvals, eigvecs = np.linalg.eigh(cov_mat)
     eigvals, eigvecs = np.maximum(eigvals[::-1], 0), eigvecs[:, ::-1]
