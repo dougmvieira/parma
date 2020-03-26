@@ -14,26 +14,21 @@ Overview
         | |codecov|
     * - package
       - | |version| |wheel| |supported-versions| |supported-implementations|
-        | |commits-since|
 .. |docs| image:: https://readthedocs.org/projects/parma/badge/?style=flat
     :target: https://readthedocs.org/projects/parma
     :alt: Documentation Status
 
-.. |travis| image:: https://travis-ci.org/dougmvieira/parma.svg?branch=master
+.. |travis| image:: https://api.travis-ci.org/dougmvieira/parma.svg?branch=master
     :alt: Travis-CI Build Status
     :target: https://travis-ci.org/dougmvieira/parma
 
-.. |codecov| image:: https://codecov.io/github/dougmvieira/parma/coverage.svg?branch=master
+.. |codecov| image:: https://codecov.io/gh/dougmvieira/parma/branch/master/graphs/badge.svg?branch=master
     :alt: Coverage Status
     :target: https://codecov.io/github/dougmvieira/parma
 
 .. |version| image:: https://img.shields.io/pypi/v/parma.svg
     :alt: PyPI Package latest release
     :target: https://pypi.org/project/parma
-
-.. |commits-since| image:: https://img.shields.io/github/commits-since/dougmvieira/parma/v0.1.2.svg
-    :alt: Commits since latest release
-    :target: https://github.com/dougmvieira/parma/compare/v0.1.2...master
 
 .. |wheel| image:: https://img.shields.io/pypi/wheel/parma.svg
     :alt: PyPI Wheel
@@ -48,9 +43,10 @@ Overview
     :target: https://pypi.org/project/parma
 
 
+
 .. end-badges
 
-Multivariate polyharmonic spline interpolation
+Multivariate Hermite spline interpolation
 
 * Free software: MIT license
 
@@ -60,6 +56,11 @@ Installation
 ::
 
     pip install parma
+
+You can also install the in-development version with::
+
+    pip install https://github.com/dougmvieira/parma/archive/master.zip
+
 
 Documentation
 =============

@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
-from __future__ import absolute_import, print_function
-
 import io
 import re
 from glob import glob
@@ -22,7 +20,7 @@ setup(
     name='parma',
     version='0.1.2',
     license='MIT license',
-    description='Multivariate polyharmonic spline interpolation',
+    description='Multivariate Hermite spline interpolation',
     long_description='%s\n%s' % (
         re.compile('^.. start-badges.*^.. end-badges', re.M | re.S).sub('', read('README.rst')),
         re.sub(':[a-z]+:`~?(.*?)`', r'``\1``', read('CHANGELOG.rst'))
@@ -48,7 +46,13 @@ setup(
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: Implementation :: CPython',
+        # uncomment if you test on these interpreters:
+        # 'Programming Language :: Python :: Implementation :: PyPy',
+        # 'Programming Language :: Python :: Implementation :: IronPython',
+        # 'Programming Language :: Python :: Implementation :: Jython',
+        # 'Programming Language :: Python :: Implementation :: Stackless',
         'Topic :: Utilities',
     ],
     project_urls={
@@ -61,13 +65,11 @@ setup(
     ],
     python_requires='>=3.5',
     install_requires=[
-        'numpy', 'scipy'
+        'numpy', 'scipy',
     ],
     extras_require={
         # eg:
         #   'rst': ['docutils>=0.11'],
         #   ':python_version=="2.6"': ['argparse'],
     },
-    setup_requires=[
-    ],
 )

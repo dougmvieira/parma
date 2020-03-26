@@ -73,6 +73,7 @@ def linear_hermite_interpolator(locs, vals, hermite_vals):
     loc = np.array(locs).mean(axis=1)
     grad = np.array(hermite_vals).mean(axis=1)
     val = np.mean(vals)
+
     def interpolator(x):
         x = np.stack(x, axis=-1)
         return val + (x - loc).dot(grad)
