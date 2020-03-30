@@ -1,5 +1,5 @@
-Reference
-=========
+User reference
+==============
 
 .. toctree::
     :glob:

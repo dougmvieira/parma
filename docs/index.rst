@@ -6,12 +6,8 @@ Contents
    :maxdepth: 2
 
    readme
-   installation
-   usage
+   guide
    reference/index
-   contributing
-   authors
-   changelog
 
 Indices and tables
 ==================

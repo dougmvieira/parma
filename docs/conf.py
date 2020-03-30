@@ -3,13 +3,17 @@ from __future__ import unicode_literals
 
 import os
 
+
 extensions = [
+    'matplotlib.sphinxext.plot_directive',
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
+    'sphinxcontrib.bibtex',
     'sphinx.ext.coverage',
     'sphinx.ext.doctest',
     'sphinx.ext.extlinks',
     'sphinx.ext.ifconfig',
+    'sphinx.ext.mathjax',
     'sphinx.ext.napoleon',
     'sphinx.ext.todo',
     'sphinx.ext.viewcode',
@@ -28,11 +32,7 @@ extlinks = {
     'issue': ('https://github.com/dougmvieira/parma/issues/%s', '#'),
     'pr': ('https://github.com/dougmvieira/parma/pull/%s', 'PR #'),
 }
-# on_rtd is whether we are on readthedocs.org
-on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
-
-if not on_rtd:  # only set the theme if we're building docs locally
-    html_theme = 'sphinx_rtd_theme'
+html_theme = 'alabaster'
 
 html_use_smartypants = True
 html_last_updated_fmt = '%b %d, %Y'

@@ -65,6 +65,28 @@ def monomials(xs, powers_list):
 
 
 def polyharmonic_interpolator(locs, vals, degree):
+    """ Polyharmonic Lagrange interpolation.
+
+    Parameters
+    ----------
+
+    locs : (n+1)-D array-like
+        Location of the samples of dimension 'n'. The first dimension must be
+        the number of samples.
+
+    vals : 1-D array-like
+        Values of the samples at their corresponding locations.
+
+    degree : int
+        Degree of the polynomial kernel.
+
+    Returns
+    -------
+
+    function
+        Interpolator of function values. See its docstring for more details.
+
+    """
     locs = np.array(locs)
     powers_list = polynomial_powers(degree, len(locs))
 
@@ -80,14 +102,29 @@ def polyharmonic_interpolator(locs, vals, degree):
     c_kernel = c[:len(vals)]
     c_poly = c[len(vals):]
 
-    def closure(x):
+    def interpolator(x):
+        """ Polyharmonic Lagrange spline interpolation of the function values.
+
+        Parameters
+        ----------
+
+        x : (n+1)-D array-like
+            Location of the interpolated values.
+
+        Returns
+        -------
+
+        1-D numpy array
+            Interpolated values at the given locations.
+
+        """
         x = np.array(x)
         xs = tuple(x[i, ..., None] - locs[i, None, :] for i in range(len(locs)))
         kernel_vals = kernel(xs, degree).dot(c_kernel)
         poly_vals = monomials(x, powers_list).dot(c_poly)
         return kernel_vals + poly_vals
 
-    return closure
+    return interpolator
 
 
 def monomials_diff(xs, axis, powers_list):
@@ -106,6 +143,36 @@ def monomials_diff(xs, axis, powers_list):
 
 def polyharmonic_hermite_interpolator(locs, vals, hermite_axes, hermite_vals,
                                       degree):
+    """ Polyharmonic Hermite interpolation.
+
+    Parameters
+    ----------
+
+    locs : (n+1)-D array-like
+        Location of the samples of dimension 'n'. The first dimension must be
+        the number of samples.
+
+    vals : 1-D array-like
+        Values of the samples at their corresponding locations.
+
+    hermite_axes : 1-D array-like of ints
+        Dimensions at which the derivatives information is available. The list
+        is a zero-based numbering.
+
+    hermite_vals : (n+1)-D array-like
+        Derivatives of the samples at their corresponding locations and
+        specified dimensions. The first dimension must match the length of
+        the argument `hermite_axes`.
+
+    Returns
+    -------
+
+    tuple of functions
+        Pair of functions: (i) interpolation of function values and (ii)
+        interpolation of function derivatives. See their docstrings for more
+        details.
+
+    """
     locs = np.array(locs)
     n_dims, n_data, n_haxes = len(locs), len(vals), len(hermite_axes)
     powers_list = np.array(polynomial_powers(degree, n_dims))
@@ -143,6 +210,21 @@ def polyharmonic_hermite_interpolator(locs, vals, hermite_axes, hermite_vals,
     c_poly = c[-n_poly:]
 
     def interpolator(x):
+        """ Polyharmonic Hermite spline interpolation of the function values.
+
+        Parameters
+        ----------
+
+        x : (n+1)-D array-like
+            Location of the interpolated values.
+
+        Returns
+        -------
+
+        1-D numpy array
+            Interpolated values at the given locations.
+
+        """
         x = np.array(x)
         kernel_xs = tuple(x[i, ..., None] - locs[i, None, :]
                           for i in range(n_dims))
@@ -157,6 +239,24 @@ def polyharmonic_hermite_interpolator(locs, vals, hermite_axes, hermite_vals,
         return kernel_vals + sum(kernel_diff_vals) + poly_vals
 
     def interpolator_diff(x, axis):
+        """ Polyharmonic Hermite interpolation of the function derivatives.
+
+        Parameters
+        ----------
+
+        x : (n+1)-D array-like
+            Locations of the interpolated derivatives.
+
+        axis : int
+            Dimension on which the derivative is interpolated.
+
+        Returns
+        -------
+
+        1-D numpy array
+            Interpolated derivatives at the given locations.
+
+        """
         x = np.array(x)
         kernel_xs = tuple(x[i, ..., None] - locs[i, None, :]
                           for i in range(n_dims))
@@ -216,6 +316,40 @@ def multiquadric_hermite_cross_validation_loss(locs, vals, hermite_axes, hermite
 
 def multiquadric_hermite_interpolator(locs, vals, hermite_axes, hermite_vals,
                                       bandwidth=None):
+    """ Multiquadric Hermite interpolation.
+
+    Parameters
+    ----------
+
+    locs : (n+1)-D array-like
+        Location of the samples of dimension 'n'. The first dimension must be
+        the number of samples.
+
+    vals : 1-D array-like
+        Values of the samples at their corresponding locations.
+
+    hermite_axes : 1-D array-like of ints
+        Dimensions at which the derivatives information is available. The list
+        is a zero-based numbering.
+
+    hermite_vals : (n+1)-D array-like
+        Derivatives of the samples at their corresponding locations and
+        specified dimensions. The first dimension must match the length of
+        the argument `hermite_axes`.
+
+    bandwidth : float, optional
+        Bandwidth of the multiquadric kernel. If `None`, the bandwidth is
+        computed via cross-validation. Defaults to `None`.
+
+    Returns
+    -------
+
+    tuple of functions
+        Pair of functions: (i) interpolation of function values and (ii)
+        interpolation of function derivatives. See their docstrings for more
+        details.
+
+    """
     locs = np.array(locs)
     n_dims, n_data, n_haxes = len(locs), len(vals), len(hermite_axes)
 
@@ -232,6 +366,21 @@ def multiquadric_hermite_interpolator(locs, vals, hermite_axes, hermite_vals,
     c_diff_kernel = np.split(c[n_data:], n_haxes)
 
     def interpolator(x):
+        """ Multiquadric Hermite spline interpolation of the function values.
+
+        Parameters
+        ----------
+
+        x : (n+1)-D array-like
+            Location of the interpolated values.
+
+        Returns
+        -------
+
+        1-D numpy array
+            Interpolated values at the given locations.
+
+        """
         x = np.array(x)
         kernel_xs = tuple(x[i, ..., None] - locs[i, None, :]
                           for i in range(n_dims))
@@ -245,6 +394,24 @@ def multiquadric_hermite_interpolator(locs, vals, hermite_axes, hermite_vals,
         return kernel_vals + sum(kernel_diff_vals)
 
     def interpolator_diff(x, axis):
+        """ Multiquadric Hermite interpolation of the function derivatives.
+
+        Parameters
+        ----------
+
+        x : (n+1)-D array-like
+            Locations of the interpolated derivatives.
+
+        axis : int
+            Dimension on which the derivative is interpolated.
+
+        Returns
+        -------
+
+        1-D numpy array
+            Interpolated derivatives at the given locations.
+
+        """
         x = np.array(x)
         kernel_xs = tuple(x[i, ..., None] - locs[i, None, :]
                           for i in range(n_dims))

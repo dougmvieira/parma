@@ -37,6 +37,8 @@ def right_inverse(mat):
     Example
     -------
 
+    >>> import numpy as np
+    >>> from parma.utils import right_inverse
     >>> mat = np.array([[1, 1, 1], [0, 1, 2]])
     >>> mat.shape
     (2, 3)

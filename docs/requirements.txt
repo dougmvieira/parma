@@ -1,2 +1,4 @@
+matplotlib
+pandas
 sphinx>=1.3
-sphinx-rtd-theme
+sphinxcontrib-bibtex
