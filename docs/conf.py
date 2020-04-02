@@ -24,7 +24,7 @@ project = 'parma'
 year = '2019-2020'
 author = 'Douglas Machado Vieira'
 copyright = '{0}, {1}'.format(year, author)
-version = release = '0.1.2'
+version = release = '0.2.0'
 
 pygments_style = 'trac'
 templates_path = ['.']
