@@ -35,6 +35,7 @@ class PolyharmonicLagrangeInterpolator:
 def polyharmonic_lagrange_interpolator_factory(degree, locs, kernel_coeff,
                                                poly_coeff):
     powers_list = polynomial_powers(degree, len(locs))
+
     def interpolator(x):
         x = np.array(x)
         xs = tuple(x[i, ..., None] - locs[i, None, :] for i in range(len(locs)))
