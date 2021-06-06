@@ -18,8 +18,8 @@ def test_interp_1D():
     x = np.linspace(0, 1, 20)
     interpolator = polyharmonic_interpolator((data_locs,), data_vals, degree)
 
-    assert np.max(np.abs(data_vals - interpolator((data_locs,)))) < 1e-15
-    assert np.max(np.abs(f(x) - interpolator((x,)))) < 1e-2
+    np.testing.assert_allclose(data_vals, interpolator((data_locs,)), atol=1e-14)
+    np.testing.assert_allclose(f(x), interpolator((x,)), atol=1e-2)
 
 
 def test_interp_2D():
@@ -39,8 +39,8 @@ def test_interp_2D():
     y = np.linspace(0, 1, 15)
     x_b, y_b = np.broadcast_arrays(x[None, :], y[:, None])
 
-    assert np.max(np.abs(data_vals - interpolator(data_locs))) < 1e-14
-    assert np.max(np.abs(f(x_b, y_b) - interpolator((x_b, y_b)))) < 1e-2
+    np.testing.assert_allclose(data_vals, interpolator(data_locs), atol=1e-14)
+    np.testing.assert_allclose(f(x_b, y_b), interpolator((x_b, y_b)), atol=1e-2)
 
 
 def test_interp_hermite_1D():
@@ -59,10 +59,10 @@ def test_interp_hermite_1D():
     interpolator, interpolator_diff = polyharmonic_hermite_interpolator(
         (data_locs,), data_vals, (0,), (data_hermite_vals,), degree)
 
-    assert np.max(np.abs(data_vals - interpolator((data_locs,)))) < 1e-15
-    assert np.max(np.abs(data_hermite_vals - interpolator_diff((data_locs,), 0))) < 1e-15
-    assert np.max(np.abs(f(x) - interpolator((x,)))) < 1e-2
-    assert np.max(np.abs(df(x) - interpolator_diff((x,), 0))) < 1e-2
+    np.testing.assert_allclose(data_vals, interpolator((data_locs,)), atol=1e-14)
+    np.testing.assert_allclose(data_hermite_vals, interpolator_diff((data_locs,), 0), atol=1e-14)
+    np.testing.assert_allclose(f(x), interpolator((x,)), atol=1e-2)
+    np.testing.assert_allclose(df(x), interpolator_diff((x,), 0), atol=1e-2)
 
 
 def test_interp_hermite_2D():
@@ -89,14 +89,12 @@ def test_interp_hermite_2D():
     y = np.linspace(0, 1, 15)
     x_b, y_b = np.broadcast_arrays(x[None, :], y[:, None])
 
-    assert np.max(np.abs(data_vals - interpolator(data_locs))) < 1e-15
-    assert np.max(np.abs(data_dx - interpolator_diff(data_locs, 0))) < 1e-15
-    assert np.max(np.abs(data_dy - interpolator_diff(data_locs, 1))) < 1e-15
-    assert np.max(np.abs(f(x_b, y_b) - interpolator((x_b, y_b)))) < 1e-2
-    assert np.max(np.abs(df_dx(x_b, y_b) - interpolator_diff((x_b, y_b), 0))
-                  ) < 1e-2
-    assert np.max(np.abs(df_dy(x_b, y_b) - interpolator_diff((x_b, y_b), 1))
-                  ) < 1e-2
+    np.testing.assert_allclose(data_vals, interpolator(data_locs), atol=1e-14)
+    np.testing.assert_allclose(data_dx, interpolator_diff(data_locs, 0), atol=1e-14)
+    np.testing.assert_allclose(data_dy, interpolator_diff(data_locs, 1), atol=1e-14)
+    np.testing.assert_allclose(f(x_b, y_b), interpolator((x_b, y_b)), atol=1e-2)
+    np.testing.assert_allclose(df_dx(x_b, y_b), interpolator_diff((x_b, y_b), 0), atol=1e-2)
+    np.testing.assert_allclose(df_dy(x_b, y_b), interpolator_diff((x_b, y_b), 1), atol=1e-2)
 
 
 def test_interp_multiquadric_hermite_1D():
@@ -114,10 +112,10 @@ def test_interp_multiquadric_hermite_1D():
     interpolator, interpolator_diff = multiquadric_hermite_interpolator(
         (data_locs,), data_vals, (0,), (data_hermite_vals,))
 
-    assert np.max(np.abs(data_vals - interpolator((data_locs,)))) < 1e-14
-    assert np.max(np.abs(data_hermite_vals - interpolator_diff((data_locs,), 0))) < 1e-14
-    assert np.max(np.abs(f(x) - interpolator((x,)))) < 1e-3
-    assert np.max(np.abs(df(x) - interpolator_diff((x,), 0))) < 1e-2
+    np.testing.assert_allclose(data_vals, interpolator((data_locs,)), atol=1e-14)
+    np.testing.assert_allclose(data_hermite_vals, interpolator_diff((data_locs,), 0), atol=1e-14)
+    np.testing.assert_allclose(f(x), interpolator((x,)), atol=1e-3)
+    np.testing.assert_allclose(df(x), interpolator_diff((x,), 0), atol=1e-2)
 
 
 def test_interp_multiquadric_hermite_2D():
@@ -144,14 +142,12 @@ def test_interp_multiquadric_hermite_2D():
     y = np.linspace(0, 1, 15)
     x_b, y_b = np.broadcast_arrays(x[None, :], y[:, None])
 
-    assert np.max(np.abs(data_vals - interpolator(data_locs))) < 1e-3
-    assert np.max(np.abs(data_dx - interpolator_diff(data_locs, 0))) < 1e-4
-    assert np.max(np.abs(data_dy - interpolator_diff(data_locs, 1))) < 1e-4
-    assert np.max(np.abs(f(x_b, y_b) - interpolator((x_b, y_b)))) < 1e-2
-    assert np.max(np.abs(df_dx(x_b, y_b) - interpolator_diff((x_b, y_b), 0))
-                  ) < 1e-2
-    assert np.max(np.abs(df_dy(x_b, y_b) - interpolator_diff((x_b, y_b), 1))
-                  ) < 1e-2
+    np.testing.assert_allclose(data_vals, interpolator(data_locs), atol=1e-3)
+    np.testing.assert_allclose(data_dx, interpolator_diff(data_locs, 0), atol=1e-4)
+    np.testing.assert_allclose(data_dy, interpolator_diff(data_locs, 1), atol=1e-4)
+    np.testing.assert_allclose(f(x_b, y_b), interpolator((x_b, y_b)), atol=1e-2)
+    np.testing.assert_allclose(df_dx(x_b, y_b), interpolator_diff((x_b, y_b), 0), atol=1e-2)
+    np.testing.assert_allclose(df_dy(x_b, y_b), interpolator_diff((x_b, y_b), 1), atol=1e-2)
 
 
 def test_polynomial_powers():
