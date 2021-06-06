@@ -145,7 +145,7 @@ def test_interp_multiquadric_hermite_2D():
     np.testing.assert_allclose(data_vals, interpolator(data_locs), atol=1e-3)
     np.testing.assert_allclose(data_dx, interpolator_diff(data_locs, 0), atol=1e-4)
     np.testing.assert_allclose(data_dy, interpolator_diff(data_locs, 1), atol=1e-4)
-    np.testing.assert_allclose(f(x_b, y_b), interpolator((x_b, y_b)), atol=1e-2)
+    np.testing.assert_allclose(f(x_b, y_b), interpolator((x_b, y_b)), atol=2e-2)
     np.testing.assert_allclose(df_dx(x_b, y_b), interpolator_diff((x_b, y_b), 0), atol=1e-2)
     np.testing.assert_allclose(df_dy(x_b, y_b), interpolator_diff((x_b, y_b), 1), atol=1e-2)
 
