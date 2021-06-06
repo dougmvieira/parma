@@ -4,6 +4,46 @@ from scipy.special import xlogy
 from .utils import polynomial_powers
 
 
+class PolyharmonicLagrangeInterpolator:
+    """ Polyharmonic Lagrange spline interpolation of the function values.
+
+    Parameters
+    ----------
+
+    x : (n+1)-D array-like
+        Location of the interpolated values.
+
+    Returns
+    -------
+
+    1-D numpy array
+        Interpolated values at the given locations.
+
+    """
+    def __init__(self, degree, locs, kernel_coeff, poly_coeff):
+        self.degree = degree
+        self.locs = locs
+        self.kernel_coeff = kernel_coeff
+        self.poly_coeff = poly_coeff
+        self.interpolator = polyharmonic_lagrange_interpolator_factory(
+            degree, locs, kernel_coeff, poly_coeff)
+
+    def __call__(self, x):
+        return self.interpolator(x)
+
+
+def polyharmonic_lagrange_interpolator_factory(degree, locs, kernel_coeff,
+                                               poly_coeff):
+    powers_list = polynomial_powers(degree, len(locs))
+    def interpolator(x):
+        x = np.array(x)
+        xs = tuple(x[i, ..., None] - locs[i, None, :] for i in range(len(locs)))
+        kernel_vals = kernel(xs, degree).dot(kernel_coeff)
+        poly_vals = monomials(x, powers_list).dot(poly_coeff)
+        return kernel_vals + poly_vals
+    return interpolator
+
+
 def multiquadric_kernel(x, bandwidth):
     return np.sqrt(1 + bandwidth**2*np.sum(x**2, axis=0))
 
@@ -102,29 +142,7 @@ def polyharmonic_interpolator(locs, vals, degree):
     c_kernel = c[:len(vals)]
     c_poly = c[len(vals):]
 
-    def interpolator(x):
-        """ Polyharmonic Lagrange spline interpolation of the function values.
-
-        Parameters
-        ----------
-
-        x : (n+1)-D array-like
-            Location of the interpolated values.
-
-        Returns
-        -------
-
-        1-D numpy array
-            Interpolated values at the given locations.
-
-        """
-        x = np.array(x)
-        xs = tuple(x[i, ..., None] - locs[i, None, :] for i in range(len(locs)))
-        kernel_vals = kernel(xs, degree).dot(c_kernel)
-        poly_vals = monomials(x, powers_list).dot(c_poly)
-        return kernel_vals + poly_vals
-
-    return interpolator
+    return PolyharmonicLagrangeInterpolator(degree, locs, c_kernel, c_poly)
 
 
 def monomials_diff(xs, axis, powers_list):
